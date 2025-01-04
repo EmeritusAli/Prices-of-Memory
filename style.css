@@ -1,0 +1,153 @@
+/* @font-face {
+    font-family: 'Inter var';
+    src: url('./Inter.var.woff2');
+} */
+
+body {
+    align-items: center;
+    padding: 1em;
+    letter-spacing: -0.011em;
+    font-family: 'Inter var', sans-serif;
+    font-size: 16px;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.header {
+    width: 100%;
+    text-align: center;
+    padding: 20px;
+    background-color: #fff; 
+}
+
+.subtitle {
+    font-size: 1.5em;
+    color: #727070;
+    text-align: center;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+h1 {
+    font-size: 2em;
+    margin-bottom: 0.5em;
+    color: #333;
+    text-align: center;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+
+}
+
+p {
+    font-size: 1.2em; 
+    color: #666; 
+    text-align: center; 
+    margin-bottom: 20px; 
+    line-height: 1.5em; 
+}
+
+.my-location {
+    fill: #8f97db;
+    stroke: white;
+}
+
+.state:hover {
+    fill: cornflowerblue;
+}
+
+circle {
+    pointer-events: none;
+}
+
+.legend-title {
+    fill: #576574;
+    text-anchor: middle;
+    font-weight: 900;
+    font-size: 0.95em;
+    letter-spacing: 0.01em;
+}
+
+.legend-byline {
+    fill: #576574;
+    opacity: 0.6;
+    text-anchor: middle;
+    font-size: 0.7em;
+}
+
+.legend-value {
+    fill: #576574;
+    /* dominant-baseline: middle; */
+    font-size: 0.8em;
+}
+
+.legend-value:first-of-type {
+    text-anchor: end;
+}
+
+/* Animate myPosition circle */
+@keyframes pulse {
+    0% {
+        r: 3;
+    }
+    50% {
+        r: 7;
+    }
+    100% {
+        r: 3;
+    }
+}
+
+.my-position {
+    animation: pulse 2s infinite;
+}
+
+
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1200px;
+    flex-grow: 1;
+    margin: 0 auto;
+}
+
+.map-wrapper {
+    width: 100%;
+    height: 60vh;
+    min-height: 300px;
+    margin-bottom: 50px;
+
+}
+
+.info-panel {
+    width: 100%;
+    padding: 1em;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    margin-top: 20px;
+    /* height: 30vh; */
+}
+
+#chart {
+    width: 95%;
+    /* height: 30vh; */
+    min-height: 200px;
+    /* margin: 0 auto; */
+}
+
+.axis-label {
+    font-size: 12px;
+    fill: #576574;
+}
+
+.chart-tooltip {
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 5px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
