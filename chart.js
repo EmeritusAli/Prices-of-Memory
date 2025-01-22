@@ -17,7 +17,7 @@ async function drawChart() {
         height: Math.min(window.innerWidth * 0.6, 600),
         margin: {
             top: 20,
-            right: 50,
+            right: 70,
             bottom: 60,
             left: 60,
         },
@@ -33,6 +33,16 @@ async function drawChart() {
 
     const bounds = wrapper.append('g')
         .style('transform', `translate(${dimentions.margin.left}px, ${dimentions.margin.top}px)`);
+
+    const tooltip = d3.select('body').append('div')
+        .attr('class', 'tooltip')
+        .style('position', 'absolute')
+        .style('background-color', 'white')
+        .style('padding', '10px')
+        .style('border', '1px solid #ccc')
+        .style('border-radius', '5px')
+        .style('pointer-events', 'none')
+        .style('opacity', 0);
 
     const xAccessor = d => d.year;
 
@@ -66,6 +76,28 @@ async function drawChart() {
 
     ];
 
+    const mouseG = bounds.append('g')
+        .attr('class', 'mouse-over-effects');
+
+    mouseG.append('path') 
+        .attr('class', 'mouse-line')
+        .style('stroke', 'grey')
+        .style('stroke-width', '1px')
+        .style('opacity', '0');
+
+    const mousePerLine = mouseG.selectAll('.mouse-per-line')
+        .data(series)
+        .enter()
+        .append('g')
+        .attr('class', 'mouse-per-line');
+
+    mousePerLine.append('circle')
+        .attr('r', 5)
+        .style('fill', 'grey')
+        .style('stroke', 'white')
+        .style('stroke-width', '1px')
+        .style('opacity', '0');
+
     series.forEach(s => {
         const lineData = data
             .map(d => ({
@@ -76,12 +108,80 @@ async function drawChart() {
             .sort((a, b) => a.year - b.year);
 
         if (lineData.length > 0) {
-            bounds.append('path')
-                .attr('d', lineGenerator(lineData))
+            const path = bounds.append('path')
+                // .attr('d', lineGenerator(lineData))
                 .attr('fill', 'none')
                 .attr('stroke', s.color)
-                .attr('stroke-width', 2);
+                .attr('stroke-width', 3);
+
+            path.attr('d', lineGenerator(lineData));
+            const pathLength = path.node().getTotalLength();
+            path.attr('stroke-dasharray', pathLength + ' ' + pathLength)
+                .attr('stroke-dashoffset', pathLength)
+                .transition()
+                .duration(200)
+                .ease(d3.easeLinear)
+                .attr('stroke-dashoffset', 0);
+            
+            const lastDataPoint = lineData[lineData.length - 1];
+            bounds.append('text')
+                .attr('x', xScale(lastDataPoint.year) + 1)
+                .attr('y', yScale(lastDataPoint.value))
+                .attr('fill', s.color)
+                .attr('dominant-baseline', 'middle')
+                .attr('font-size', 18)
+                .attr('font-weight', 'bold')
+                .text(s.name);
+
+            
         }
+    });
+
+    mouseG.append('rect')
+        .attr('width', dimentions.boundedWidth)
+        .attr('height', dimentions.boundedHeight)
+        .attr('fill', 'none')
+        .attr('pointer-events', 'all')
+        .on('mouseout', function() {
+            d3.select('.mouse-line')
+                .style('opacity', '0');
+            d3.selectAll('.mouse-per-line circle')
+                .style('opacity', '0');
+                tooltip.style('opacity', '0');
+        })
+        .on('mouseover', function() {
+            d3.select('.mouse-line')
+                .style('opacity', '1');
+            d3.selectAll('.mouse-per-line circle')
+                .style('opacity', '1');
+          
+        })
+        .on('mousemove', function(event) {
+            const mouse = d3.pointer(event);
+            d3.select('.mouse-line')
+                .attr('d', `M${mouse[0]},${dimentions.boundedHeight} ${mouse[0]},0`);
+        const year = Math.round(xScale.invert(mouse[0]));
+        const tooltipContent = series.map(s => {
+            const value = data.find(d => d.year === year)?.[s.key];
+            return value ? `${s.name}: $${d3.format(`.2s`)(value)}` : null;
+        }).filter(Boolean).join('<br>');
+
+        if (tooltipContent){
+            tooltip.style('opacity', 0.6)
+                .html(`${year}<br>${tooltipContent}`)
+                .style('left', event.pageX + 10 + 'px')
+                .style('top', event.pageY - 10 + 'px');
+        }
+
+        d3.selectAll(".mouse-per-line")
+                .attr("transform", function(d) {
+                    const value = data.find(item => item.year === year)?.[d.key];
+                    if (value) {
+                        return `translate(${mouse[0]},${yScale(value)})`;
+                    }
+                    return `translate(-9999,-9999)`;
+                });
+
     });
 
     const yAxis = d3.axisLeft(yScale)
@@ -103,21 +203,6 @@ async function drawChart() {
     
     bounds.append('g')
           .call(yAxis);
-
-    
-    
-
-    
-
-    
-
-    
-  
-
-
-
-
-
 
 }
 

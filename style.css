@@ -57,6 +57,7 @@ p {
 
 circle {
     pointer-events: none;
+    z-index: 1000;
 }
 
 .legend-title {
@@ -141,13 +142,15 @@ circle {
     fill: #576574;
 }
 
-.chart-tooltip {
+.tooltip {
     position: absolute;
     background-color: white;
-    border: 1px solid #ddd;
     padding: 10px;
+    border: 1px solid #ccc;
     border-radius: 5px;
     pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.2s;
+}
+
+.mouse-line {
+    pointer-events: none;
 }
